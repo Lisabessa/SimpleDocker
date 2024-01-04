@@ -1,114 +1,194 @@
-# SimpleDocker
-developing a simple docker image for your own server.
+# Simple Docker
+
+Введение в докер. Разработка простого докер образа для собственного сервера.
+
+## Part 1. Готовый докер
+
+- На мак установлен докер
+- После установки предварительно выполняем следующие команды, чтоб сохранить свободное место на диске:
+  `rm -rf ~/Library/Containers/com.docker.docker`
+  `mkdir -p ~/goinfre/Docker/Data`
+  `ln -s ~/goinfre/Docker ~/Library/Containers/com.docker.docker`
+
+- Взят официальный докер образ с **nginx** и выкачан при помощи `docker pull nginx`
+- Проверено наличие докер образа через `docker images`
+
+![simple_docker](assets/Part1_1.png)
+
+- Запущен докер образ через `docker run -d [image_id|repository]`
+- Проверено, что образ запустился через `docker ps`
+
+![simple_docker](assets/Part1_2.png)
+
+- Просмотрена информация о контейнере через `docker inspect [container_id|container_name]`
+
+![simple_docker](assets/Part1_3.png)
+![simple_docker](assets/Part1_4.png)
+![simple_docker](assets/Part1_5.png)
+
+- Размер контейнера: 1095
+
+![simple_docker](assets/Part1_6.png)
+
+- Список замапленных портов: "80/tcp"
+
+![simple_docker](assets/Part1_7.png)
+
+- ip контейнера: 172.17.0.2
+
+![simple_docker](assets/Part1_8.png)
+
+- Остановлен докер образ через `docker stop [container_id|container_name]`
+- Проверено, что образ остановился через `docker ps`
+
+![simple_docker](assets/Part1_9.png)
+
+- Запущен докер с портами 80 и 443 в контейнере, замапленными на такие же порты на локальной машине, через команду *run*
+
+![simple_docker](assets/Part1_10.png)
+
+- Проверено, что в браузере по адресу *localhost:80* доступна стартовая страница **nginx**
+
+![simple_docker](assets/Part1_11.png)
+
+- Перезапущен докер контейнер через `docker restart [container_id|container_name]`
+- Проверено, что контейнер запустился
+
+![simple_docker](assets/Part1_12.png)
 
 
-## Part 1. Ready-made docker
+## Part 2. Операции с контейнером
 
-As the final goal of your little practice you have immediately chosen to write a docker image for your own web server, so first you need to deal with a ready-made docker image for the server.
-You chose a pretty simple **nginx**.
+- Прочитан конфигурационный файл *nginx.conf* внутри докер контейнера через команду *exec*
 
-**== Task ==**
+![simple_docker](assets/Part2_1.png)
 
-##### Take the official docker image from **nginx** and download it using `docker pull`.
-##### Check for the docker image with `docker images`
-##### Run docker image with `docker run -d [image_id|repository]`
-##### Check that the image is running with `docker ps`
-##### View container information with `docker inspect [container_id|container_name]`
-##### From the command output define and write in the report the container size, list of mapped ports and container ip
-##### Stop docker image with `docker stop [container_id|container_name]`
-##### Check that the image has stopped with `docker ps`
-##### Run docker with ports 80 and 443 in container, mapped to the same ports on the local machine, with *run* command
-##### Check that the **nginx** start page is available in the browser at *localhost:80*
-##### Restart docker container with `docker restart [container_id|container_name]`
-##### Check in any way that the container is running
+- Создан на локальной машине файл *nginx.conf*
+- В нем настроена по пути */status* отдача страницы статуса сервера **nginx**
 
-- Add the following screenshots to the report:
-    - the call and output of all commands used in this part of the task;
-    - **nginx** start page at *localhost:80* (address must be shown).
-    
+![simple_docker](assets/Part2_2.png)
 
-## Part 2. Operations with container
+- Скопирован созданный файл *nginx.conf* внутрь докер образа через команду `docker cp`
 
-Docker image and container are ready. Now we can look into **nginx** configuration and display page status.
+![simple_docker](assets/Part2_3.png)
 
-**== Task ==**
+- Перезапущен **nginx** внутри докер образа через команду *exec*
 
-##### Read the *nginx.conf* configuration file inside the docker container with the *exec* command
-##### Create a *nginx.conf* file on a local machine
-##### Configure it on the */status* path to return the **nginx** server status page
-##### Copy the created *nginx.conf* file inside the docker image using the `docker cp` command
-##### Restart **nginx** inside the docker image with *exec*
-##### Check that *localhost:80/status* returns the **nginx** server status page
-##### Export the container to a *container.tar* file with the *export* command
-##### Stop the container
-##### Delete the image with `docker rmi [image_id|repository]`without removing the container first
-##### Delete stopped container
-##### Import the container back using the *import*command
-##### Run the imported container
-##### Check that *localhost:80/status* returns the **nginx** server status page
+![simple_docker](assets/Part2_4.png)
 
-- Add the following screenshots to the report:
-    - the call and output of all commands used in this part of the task;
-    - the contents of the created *nginx.conf* file;
-    - the **nginx** server status page at *localhost:80/status*.
+- Проверено, что по адресу *localhost:80/status* отдается страничка со статусом сервера **nginx**
 
+![simple_docker](assets/Part2_5.png)
 
-## Part 3. Mini web server
+- Экспортирован контейнер в файл *container.tar* через команду *export*
 
-It's time to take a little break from the docker to prepare for the last stage. It's time to write your own server.
+![simple_docker](assets/Part2_6.png)
 
-**== Task ==**
+- Контейнер остановлен
+- Удален образ через `docker rmi [image_id|repository]`, не удаляя перед этим контейнеры
+- Удален остановленный контейнер
 
-##### Write a mini server in **C** and **FastCgi** that will return a simple page saying `Hello World!`
-##### Run the written mini server via *spawn-fcgi* on port 8080
-##### Write your own *nginx.conf* that will proxy all requests from port 81 to *127.0.0.1:8080*
-##### Check that browser on *localhost:81* returns the page you wrote
-##### Put the *nginx.conf* file under *./nginx/nginx.conf* (you will need this later)
+![simple_docker](assets/Part2_7.png)
 
-## Part 4. Your own docker
+- Импортирован контейнер обратно через команду *import*
+- Запущен импортированный контейнер
 
-Now everything is ready. You can start writing the docker image for the created server.
+![simple_docker](assets/Part2_8.png)
 
-**== Task ==**
+- Проверено, что по адресу *localhost:80/status* отдается страничка со статусом сервера **nginx**
 
-*When writing a docker image avoid multiple calls of RUN instructions*
+![simple_docker](assets/Part2_9.png)
 
-#### Write your own docker image that:
-##### 1) builds mini server sources on FastCgi from [Part 3](#part-3-mini- web-server)
-##### 2) runs it on port 8080
-##### 3) copies inside the image written *./nginx/nginx.conf*
-##### 4) runs **nginx**.
-_**nginx** can be installed inside the docker itself, or you can use a ready-made image with **nginx** as base._
-##### Build the written docker image with `docker build`, specifying the name and tag
-##### Check with `docker images` that everything is built correctly
-##### Run the built docker image by mapping port 81 to 80 on the local machine and mapping the *./nginx* folder inside the container to the address where the **nginx** configuration files are located (see [Part 2])
-##### Check that the page of the written mini server is available on localhost:80
-##### Add proxying of */status* page in *./nginx/nginx.conf* to return the **nginx** server status
-##### Restart docker image
-*If everything is done correctly, after saving the file and restarting the container, the configuration file inside the docker image should update itself without any extra steps
-##### Check that *localhost:80/status* now returns a page with **nginx** status
+## Part 3. Мини веб-сервер
+
+- Написан мини сервер на **C** и **FastCgi**, который будет возвращать простейшую страничку с надписью `Hello World!`
+
+![simple_docker](assets/Part3_1.png)
+
+- Написан свой *nginx.conf*, который будет проксировать все запросы с 81 порта на *127.0.0.1:8080*
+
+![simple_docker](assets/Part3_2.png)
+
+- Запущен контейнер
+- Скопированы файлы nginx.conf и mini_server.c
+
+![simple_docker](assets/Part3_3.png)
+
+- Подключаемся к консоли запущенного контейнера командой `docker exec -it great_wescoff bash`
+- Обновляем контейнер `apt-get update`
+- Устанавливаем нужные пакеты `apt-get install gcc spawn-fcgi libfcgi-dev`
+- Запуcкаем написанный мини сервер через *spawn-fcgi* на порту 8080,
+командами `gcc -o server mini_server.c -lfcgi`, `spawn-fcgi -p 8080 ./server`, `nginx -s reload`
+
+![simple_docker](assets/Part3_4.png)
+
+- Проверено, что в браузере по *localhost:81* отдается написанная вами страничка
+
+![simple_docker](assets/Part3_5.png)
+
+## Part 4. Свой докер
+
+- Написан свой докер образ, который:
+  * собирает исходники мини сервера на FastCgi из предыдущей части
+  * запускает его на 8080 порту
+  * копирует внутрь образа написанный *./nginx/nginx.conf*
+  * запускает **nginx**.
+
+![simple_docker](assets/Part4_1.png)
+![simple_docker](assets/Part4_2.png)
+![simple_docker](assets/Part4_3.png)
+![simple_docker](assets/Part4_4.png)
+
+- Собираем написанный докер образ через `docker build` при этом указав имя и тег
+
+![simple_docker](assets/Part4_5.png)
+
+- Проверяем через `docker images`, что все собралось корректно
+- Запуcкаем собранный докер образ с маппингом 81 порта на 80 на локальной машине и маппингом папки *./nginx* внутрь контейнера по адресу, где лежат конфигурационные файлы **nginx**'а
+командой `docker run -d -p 80:81 part4_build:1`
+
+![simple_docker](assets/Part4_6.png)
+
+- Проверяем, что по localhost:80 доступна страничка написанного мини сервера
+
+![simple_docker](assets/Part4_7.png)
+
+- Дописано в *./nginx/nginx.conf* проксирование странички */status*, по которой надо отдавать статус сервера **nginx**
+- Проверяем, что теперь по *localhost:80/status* отдается страничка со статусом **nginx**
+
+![simple_docker](assets/Part4_8.png)
 
 ## Part 5. **Dockle**
 
-Once you've written the image, it's never a bad idea to check it for security.
+- Просканировали образ из предыдущего задания через `dockle [image_id|repository]`
 
-**== Task ==**
+![simple_docker](assets/Part5_1.png)
 
-##### Check the image from the previous task with `dockle [image_id|repository]`
-##### Fix the image so that there are no errors or warnings when checking with **dockle**
+- Исправлен образ так, чтобы при проверке через **dockle** не было ошибок и предупреждений
 
+![simple_docker](assets/Part5_2.png)
+![simple_docker](assets/Part5_3.png)
 
-## Part 6. Basic **Docker Compose**
+## Part 6. Базовый **Docker Compose**
 
-There, you've finished your warm-up. Wait a minute though...
-Why not try experimenting with deploying a project consisting of several docker images at once?
+- Написан файл *docker-compose.yml*, с помощью которого:
+  * поднимаем докер контейнер из предыдущей части _(он должен работать в локальной сети, т.е. не нужно использовать инструкцию **EXPOSE** и мапить порты на локальную машину)_ 
+  * поднимаем докер контейнер с **nginx**, который будет проксировать все запросы с 8080 порта на 81 порт первого контейнера 
+  * мапим 8080 порт второго контейнера на 80 порт локальной машины
 
-**== Task ==**
+![simple_docker](assets/Part6_1.png)
+![simple_docker](assets/Part6_2.png)
+![simple_docker](assets/Part6_3.png)
+![simple_docker](assets/Part6_4.png)
 
-##### Write a *docker-compose.yml* file, using which:
-##### 1) Start the docker container from [Part 5] _(it must work on local network, i.e., you don't need to use **EXPOSE** instruction and map ports to local machine)_
-##### 2) Start the docker container with **nginx** which will proxy all requests from port 8080 to port 81 of the first container
-##### Map port 8080 of the second container to port 80 of the local machine
-##### Stop all running containers
-##### Build and run the project with the `docker-compose build` and `docker-compose up` commands
-##### Check that the browser returns the page you wrote on *localhost:80* as before
+- Остановили все запущенные контейнеры
+
+![simple_docker](assets/Part6_5.png)
+
+- Собираем и запускаем проект с помощью команд `docker-compose build` и `docker-compose up`
+
+![simple_docker](assets/Part6_6.png)
+
+- Проверяем, что в браузере по *localhost:80* отдается написанная вами страничка, как и ранее
+
+![simple_docker](assets/Part6_7.png)
